@@ -6,16 +6,23 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace ChatApp.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class MessageRoomUser : Migration
+    public partial class Initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AddColumn<Guid>(
-                name: "RoomId",
-                table: "Users",
-                type: "uuid",
-                nullable: true);
+            migrationBuilder.CreateTable(
+                name: "Users",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Username = table.Column<string>(type: "text", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Users", x => x.Id);
+                });
 
             migrationBuilder.CreateTable(
                 name: "Rooms",
@@ -34,7 +41,7 @@ namespace ChatApp.Infrastructure.Migrations
                         column: x => x.CreatorId,
                         principalTable: "Users",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -55,19 +62,39 @@ namespace ChatApp.Infrastructure.Migrations
                         column: x => x.RoomId,
                         principalTable: "Rooms",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Messages_Users_AuthorId",
                         column: x => x.AuthorId,
                         principalTable: "Users",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
-            migrationBuilder.CreateIndex(
-                name: "IX_Users_RoomId",
-                table: "Users",
-                column: "RoomId");
+            migrationBuilder.CreateTable(
+                name: "UserInRooms",
+                columns: table => new
+                {
+                    IdRoom = table.Column<Guid>(type: "uuid", nullable: false),
+                    IdUser = table.Column<Guid>(type: "uuid", nullable: false),
+                    JoinedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserInRooms", x => new { x.IdRoom, x.IdUser });
+                    table.ForeignKey(
+                        name: "FK_UserInRooms_Rooms_IdRoom",
+                        column: x => x.IdRoom,
+                        principalTable: "Rooms",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_UserInRooms_Users_IdUser",
+                        column: x => x.IdUser,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Messages_AuthorId",
@@ -84,34 +111,26 @@ namespace ChatApp.Infrastructure.Migrations
                 table: "Rooms",
                 column: "CreatorId");
 
-            migrationBuilder.AddForeignKey(
-                name: "FK_Users_Rooms_RoomId",
-                table: "Users",
-                column: "RoomId",
-                principalTable: "Rooms",
-                principalColumn: "Id");
+            migrationBuilder.CreateIndex(
+                name: "IX_UserInRooms_IdUser",
+                table: "UserInRooms",
+                column: "IdUser");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropForeignKey(
-                name: "FK_Users_Rooms_RoomId",
-                table: "Users");
-
             migrationBuilder.DropTable(
                 name: "Messages");
 
             migrationBuilder.DropTable(
+                name: "UserInRooms");
+
+            migrationBuilder.DropTable(
                 name: "Rooms");
 
-            migrationBuilder.DropIndex(
-                name: "IX_Users_RoomId",
-                table: "Users");
-
-            migrationBuilder.DropColumn(
-                name: "RoomId",
-                table: "Users");
+            migrationBuilder.DropTable(
+                name: "Users");
         }
     }
 }

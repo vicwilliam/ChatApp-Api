@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace ChatApp.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20221203194700_MessageRoomUser")]
-    partial class MessageRoomUser
+    [Migration("20221204212235_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -85,18 +85,31 @@ namespace ChatApp.Infrastructure.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<Guid?>("RoomId")
-                        .HasColumnType("uuid");
-
                     b.Property<string>("Username")
                         .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("RoomId");
-
                     b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("ChatApp.Domain.Models.UserInRooms", b =>
+                {
+                    b.Property<Guid>("IdRoom")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("IdUser")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("JoinedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("IdRoom", "IdUser");
+
+                    b.HasIndex("IdUser");
+
+                    b.ToTable("UserInRooms");
                 });
 
             modelBuilder.Entity("ChatApp.Domain.Models.Message", b =>
@@ -104,13 +117,13 @@ namespace ChatApp.Infrastructure.Migrations
                     b.HasOne("ChatApp.Domain.Models.User", "Author")
                         .WithMany()
                         .HasForeignKey("AuthorId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("ChatApp.Domain.Models.Room", "Room")
                         .WithMany("Messages")
                         .HasForeignKey("RoomId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Author");
@@ -123,17 +136,29 @@ namespace ChatApp.Infrastructure.Migrations
                     b.HasOne("ChatApp.Domain.Models.User", "Creator")
                         .WithMany()
                         .HasForeignKey("CreatorId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Creator");
                 });
 
-            modelBuilder.Entity("ChatApp.Domain.Models.User", b =>
+            modelBuilder.Entity("ChatApp.Domain.Models.UserInRooms", b =>
                 {
-                    b.HasOne("ChatApp.Domain.Models.Room", null)
+                    b.HasOne("ChatApp.Domain.Models.Room", "Room")
                         .WithMany("Members")
-                        .HasForeignKey("RoomId");
+                        .HasForeignKey("IdRoom")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("ChatApp.Domain.Models.User", "User")
+                        .WithMany("JoinedRooms")
+                        .HasForeignKey("IdUser")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Room");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("ChatApp.Domain.Models.Room", b =>
@@ -141,6 +166,11 @@ namespace ChatApp.Infrastructure.Migrations
                     b.Navigation("Members");
 
                     b.Navigation("Messages");
+                });
+
+            modelBuilder.Entity("ChatApp.Domain.Models.User", b =>
+                {
+                    b.Navigation("JoinedRooms");
                 });
 #pragma warning restore 612, 618
         }

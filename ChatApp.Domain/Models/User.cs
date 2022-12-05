@@ -8,4 +8,5 @@ public class User : BaseEntity
     }
 
     public string Username { get; set; }
+    public virtual ICollection<UserInRooms> JoinedRooms { get; set; }
 }

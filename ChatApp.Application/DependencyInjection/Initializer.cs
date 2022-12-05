@@ -1,3 +1,6 @@
+using ChatApp.Application.Service.Base;
+using ChatApp.Application.Service.Entities;
+using ChatApp.Application.Service.Interfaces;
 using ChatApp.Domain.Interfaces;
 using ChatApp.Domain.Models;
 using ChatApp.Infrastructure.Context;
@@ -14,5 +17,7 @@ public class Initializer
         services.AddDbContext<AppDbContext>(opt => opt.UseNpgsql(connection));
 
         services.AddScoped<IRepository<User>,UserRepository>();
+        services.AddTransient<IRoomService, RoomService>();
+        
     }
 }

@@ -12,8 +12,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Dtos" />
-      <Folder Include="Service" />
+      <PackageReference Include="Microsoft.AspNetCore.SignalR" Version="1.1.0" />
     </ItemGroup>
 
 </Project>
