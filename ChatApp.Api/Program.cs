@@ -1,11 +1,15 @@
 using ChatApp.Api.Hubs;
 using ChatApp.Application.DependencyInjection;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 Initializer.Configure(builder.Services,
     builder.Configuration.GetConnectionString("DefaultConnection") ?? string.Empty);
+
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme);
+
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
