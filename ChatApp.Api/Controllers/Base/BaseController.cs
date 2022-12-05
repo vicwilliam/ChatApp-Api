@@ -17,10 +17,11 @@ public class BaseController<T> : Controller where T : class
         GetUserId();
     }
 
-    private void GetUserId()
+    protected Guid GetUserId()
     {
         UserId = _contextAccessor?
             .HttpContext?.User?.Identity?.GetUserId() ?? Guid.Empty;
+        return UserId;
     }
 
     [HttpGet]

@@ -10,26 +10,26 @@ namespace ChatApp.Api.Controllers;
 [Route("[controller]")]
 public class RoomController : BaseController<Room>
 {
-    private readonly IRoomService roomService;
+    private readonly IRoomService _roomService;
 
     public RoomController(IRoomService baseService,
         IHttpContextAccessor httpContextAncestor)
         : base(baseService, httpContextAncestor)
     {
-        roomService = baseService;
+        _roomService = baseService;
     }
 
     [HttpPost]
     public async Task<IActionResult> Create(CreateRoomDto dto)
     {
         dto.CreatorId = Guid.Parse("01ee577b-7c6f-443b-815c-3129ce4509e6");
-        await roomService.CreateRoom(dto);
+        await _roomService.CreateRoom(dto);
         return Ok();
     }
 
     [HttpGet("list")]
     public IActionResult ListRooms()
     {
-        return Ok(roomService.GetAll());
+        return Ok(_roomService.GetAll());
     }
 }

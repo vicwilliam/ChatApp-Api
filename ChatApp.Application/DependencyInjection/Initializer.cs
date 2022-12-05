@@ -17,7 +17,10 @@ public class Initializer
         services.AddDbContext<AppDbContext>(opt => opt.UseNpgsql(connection));
 
         services.AddScoped<IRepository<User>,UserRepository>();
+        services.AddScoped<IRepository<User>,UserRepository>();
+        
         services.AddTransient<IRoomService, RoomService>();
+        services.AddTransient<IMessageService, MessageService>();
         
     }
 }

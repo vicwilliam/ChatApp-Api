@@ -2,6 +2,7 @@
 
 public class SendMessageDto
 {
-    public string Message { get; set; }
+    public string Content { get; set; }
     public Guid RoomId { get; set; }
+    public Guid AuthorId { get; set; }
 }

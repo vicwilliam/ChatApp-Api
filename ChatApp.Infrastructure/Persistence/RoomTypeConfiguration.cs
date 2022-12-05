@@ -10,10 +10,9 @@ public class RoomTypeConfiguration : IEntityTypeConfiguration<Room>
     {
         builder.HasMany(r => r.Members)
             .WithOne(r => r.Room);
-        
+
         builder.HasOne(x => x.Creator)
             .WithMany()
             .HasForeignKey(x => x.CreatorId);
-
     }
 }
