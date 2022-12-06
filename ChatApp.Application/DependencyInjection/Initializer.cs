@@ -20,7 +20,7 @@ public class Initializer
     {
         JwtTokenOptions tokenOptions = configuration.GetSection(nameof(JwtTokenOptions)).Get<JwtTokenOptions>();
         JwtSigningKey jwtSigningKey = new JwtSigningKey(tokenOptions);
-        
+
         services.AddDbContext<AppDbContext>(
             opt => opt.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
 
@@ -40,6 +40,7 @@ public class Initializer
         services.AddTransient<IRoomService, RoomService>();
         services.AddTransient<IMessageService, MessageService>();
         services.AddScoped<IJwtService, JwtService>();
+        services.AddScoped<IUserService, UserService>();
 
         services.Configure<JwtTokenOptions>(a => configuration.GetSection(nameof(JwtTokenOptions)).Bind(a));
         services.AddSingleton(jwtSigningKey);

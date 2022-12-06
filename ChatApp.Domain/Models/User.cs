@@ -5,11 +5,5 @@ namespace ChatApp.Domain.Models;
 
 public class User : IdentityUser<Guid>
 {
-    public User(string username)
-    {
-        Username = username;
-    }
-
-    public string Username { get; set; }
-    public virtual ICollection<UserInRooms> JoinedRooms { get; set; }
+    public bool IsBot { get; set; } = false;
 }

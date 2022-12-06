@@ -6,6 +6,7 @@ using ChatApp.Application.Service.Interfaces;
 using ChatApp.Domain.Models;
 using ChatApp.Infrastructure.Context;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 
 namespace ChatApp.Application.Service.Entities;
 
@@ -46,7 +47,7 @@ public class MessageService : BaseService<Message>, IMessageService
 
         using var connection = _rabbitMqService.CreateChannel();
         using var model = connection.CreateModel();
-        var body = Encoding.UTF8.GetBytes(dto.Parameter);
+        var body = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(dto));
         model.BasicPublish("StocksExchange", "", true, null, body: body);
     }
 }

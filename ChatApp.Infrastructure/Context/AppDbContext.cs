@@ -27,5 +27,4 @@ public class AppDbContext : IdentityDbContext<User,IdentityRole<Guid>,Guid>
 
     public DbSet<Message> Messages { get; set; }
     public DbSet<Room> Rooms { get; set; }
-    public DbSet<UserInRooms> UserInRooms { get; set; }
 }

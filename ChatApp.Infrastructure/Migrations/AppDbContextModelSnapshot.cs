@@ -93,6 +93,9 @@ namespace ChatApp.Infrastructure.Migrations
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("boolean");
 
+                    b.Property<bool>("IsBot")
+                        .HasColumnType("boolean");
+
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("boolean");
 
@@ -126,10 +129,6 @@ namespace ChatApp.Infrastructure.Migrations
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)");
 
-                    b.Property<string>("Username")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.HasKey("Id");
 
                     b.HasIndex("NormalizedEmail")
@@ -140,24 +139,6 @@ namespace ChatApp.Infrastructure.Migrations
                         .HasDatabaseName("UserNameIndex");
 
                     b.ToTable("AspNetUsers", (string)null);
-                });
-
-            modelBuilder.Entity("ChatApp.Domain.Models.UserInRooms", b =>
-                {
-                    b.Property<Guid>("IdRoom")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("IdUser")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime>("JoinedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("IdRoom", "IdUser");
-
-                    b.HasIndex("IdUser");
-
-                    b.ToTable("UserInRooms");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole<System.Guid>", b =>
@@ -320,25 +301,6 @@ namespace ChatApp.Infrastructure.Migrations
                     b.Navigation("Creator");
                 });
 
-            modelBuilder.Entity("ChatApp.Domain.Models.UserInRooms", b =>
-                {
-                    b.HasOne("ChatApp.Domain.Models.Room", "Room")
-                        .WithMany("Members")
-                        .HasForeignKey("IdRoom")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("ChatApp.Domain.Models.User", "User")
-                        .WithMany("JoinedRooms")
-                        .HasForeignKey("IdUser")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Room");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole<System.Guid>", null)
@@ -392,14 +354,7 @@ namespace ChatApp.Infrastructure.Migrations
 
             modelBuilder.Entity("ChatApp.Domain.Models.Room", b =>
                 {
-                    b.Navigation("Members");
-
                     b.Navigation("Messages");
-                });
-
-            modelBuilder.Entity("ChatApp.Domain.Models.User", b =>
-                {
-                    b.Navigation("JoinedRooms");
                 });
 #pragma warning restore 612, 618
         }

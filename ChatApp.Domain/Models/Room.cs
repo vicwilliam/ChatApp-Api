@@ -6,6 +6,4 @@ public class Room : BaseEntity
     public User Creator { get; set; }
     public Guid CreatorId { get; set; }
     public virtual ICollection<Message> Messages { get; set; }
-    
-    public virtual ICollection<UserInRooms> Members { get; set; }
 }

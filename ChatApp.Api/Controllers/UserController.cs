@@ -1,4 +1,7 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using ChatApp.Application.Dtos;
+using ChatApp.Application.Service.Interfaces;
+using ChatApp.Domain.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ChatApp.Api.Controllers;
@@ -6,17 +9,30 @@ namespace ChatApp.Api.Controllers;
 [ApiController]
 [AllowAnonymous]
 [Route("[controller]")]
-public class UserController
+public class UserController : Controller
 {
-    [HttpPost("register")]
-    public IActionResult Register()
+    private readonly IUserService service;
+
+    public UserController(IUserService service)
     {
-        return null;
+        this.service = service;
+    }
+
+    [HttpPost("register")]
+    public async Task<IActionResult> Register(UserRegisterLoginDto dto)
+    {
+        var result = await service.RegisterUser(dto);
+        if (result.Succeeded)
+            return Ok(result);
+        return BadRequest(result);
     }
 
     [HttpPost("authenticate")]
-    public IActionResult Authenticate()
+    public async Task<IActionResult> Authenticate(UserRegisterLoginDto dto)
     {
-        return null;
+        var result = await service.LoginUser(dto);
+        if (result.Succeeded)
+            return Ok(result);
+        return BadRequest(result);
     }
 }

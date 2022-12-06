@@ -3,6 +3,7 @@ using ChatApp.Api.Hubs;
 using ChatApp.Application.Dtos;
 using ChatApp.Application.Service.Interfaces;
 using ChatApp.Domain.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 
@@ -34,8 +35,10 @@ public class MessagesController : BaseController<Message>
     }
 
     [HttpPost("sendCommand")]
+    [AllowAnonymous]
     public async Task<IActionResult> SendCommand(SendCommandDto dto)
     {
+        await Task.Yield();
         _messageService.SendCommand(dto);
         return Ok();
     }

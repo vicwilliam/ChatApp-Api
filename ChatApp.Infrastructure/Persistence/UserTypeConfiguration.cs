@@ -8,7 +8,5 @@ public class UserTypeConfiguration : IEntityTypeConfiguration<User>
 {
     public void Configure(EntityTypeBuilder<User> builder)
     {
-        builder.HasMany(u => u.JoinedRooms)
-            .WithOne(r => r.User);
     }
 }
