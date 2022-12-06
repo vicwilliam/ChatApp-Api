@@ -7,4 +7,7 @@ namespace ChatApp.Application.Service.Interfaces;
 public interface IMessageService : IBaseService<Message>
 {
     Task SendMessage(SendMessageDto dto);
+    Task<ICollection<Message>> GetTop50(Guid roomId);
+
+    void SendCommand(SendCommandDto dto);
 }
