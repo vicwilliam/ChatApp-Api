@@ -26,11 +26,23 @@ public class MessagesController : BaseController<Message>
     [HttpPost("send")]
     public async Task<IActionResult> SendMessage(SendMessageDto dto)
     {
-        // dto.AuthorId = UserId;
         dto.AuthorId = Guid.Parse("01ee577b-7c6f-443b-815c-3129ce4509e6");
         await _messageService.SendMessage(dto);
         await _wsHubContext.Clients.All.SendAsync("newMessage", dto);
         Console.WriteLine("sent");
         return Ok();
+    }
+
+    [HttpPost("sendCommand")]
+    public async Task<IActionResult> SendCommand(SendMessageDto dto)
+    {
+        return null;
+    }
+
+    [HttpGet("last50")]
+    public async Task<IActionResult> GetMessages([FromQuery] Guid roomId)
+    {
+        var result = await _messageService.GetTop50(roomId);
+        return Ok(result);
     }
 }

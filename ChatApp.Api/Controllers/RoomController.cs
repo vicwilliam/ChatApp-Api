@@ -29,8 +29,8 @@ public class RoomController : BaseController<Room>
     {
         dto.CreatorId = Guid.Parse("01ee577b-7c6f-443b-815c-3129ce4509e6");
         await _roomService.CreateRoom(dto);
-        await _wsHubContext.Clients.Groups("").SendCoreAsync("newMessage", new object?[] { "" });
-        return Created("/","");
+        await _wsHubContext.Clients.All.SendAsync("newRoom");
+        return Created("/", "");
     }
 
     [HttpGet("list")]
