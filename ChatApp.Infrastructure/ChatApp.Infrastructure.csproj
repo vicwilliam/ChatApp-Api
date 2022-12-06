@@ -7,6 +7,8 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <PackageReference Include="Microsoft.AspNetCore.Identity" Version="2.2.0" />
+      <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="6.0.11" />
       <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.0" />
       <PackageReference Include="Npgsql" Version="7.0.0" />
       <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="7.0.0" />
@@ -18,6 +20,15 @@
 
     <ItemGroup>
       <Folder Include="Migrations" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Reference Include="EntityFramework">
+        <HintPath>..\..\..\.nuget\packages\entityframework\6.1.0\lib\net45\EntityFramework.dll</HintPath>
+      </Reference>
+      <Reference Include="Microsoft.AspNet.Identity.EntityFramework">
+        <HintPath>..\..\..\.nuget\packages\microsoft.aspnet.identity.entityframework\2.2.3\lib\net45\Microsoft.AspNet.Identity.EntityFramework.dll</HintPath>
+      </Reference>
     </ItemGroup>
 
 </Project>

@@ -36,15 +36,8 @@ public class MessagesController : BaseController<Message>
     [HttpPost("sendCommand")]
     public async Task<IActionResult> SendCommand(SendCommandDto dto)
     {
-        try
-        {
-            _messageService.SendCommand(dto);
-        return    Ok();
-        }
-        catch (Exception e)
-        {
-         return  BadRequest(e);
-        }
+        _messageService.SendCommand(dto);
+        return Ok();
     }
 
     [HttpGet("last50")]

@@ -42,6 +42,6 @@ public class RoomController : BaseController<Room>
     [HttpPost("command")]
     public IActionResult PostCommand()
     {
-        
+        return null;
     }
 }

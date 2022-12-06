@@ -3,6 +3,6 @@ using ChatApp.Domain.Models;
 
 namespace ChatApp.Application.Service.Interfaces;
 
-    public interface IUserService : IBaseService<User>
+    public interface IUserService
     {
     }
