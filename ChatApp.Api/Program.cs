@@ -1,6 +1,6 @@
 using System.Reflection;
-using ChatApp.Api.Hubs;
 using ChatApp.Application.DependencyInjection;
+using ChatApp.Application.Service.Hubs;
 using ChatApp.Application.Service.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;

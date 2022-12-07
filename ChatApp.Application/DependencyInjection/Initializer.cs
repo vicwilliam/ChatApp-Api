@@ -3,6 +3,7 @@ using ChatApp.Application.Options;
 using ChatApp.Application.Service.Entities;
 using ChatApp.Application.Service.Interfaces;
 using ChatApp.Application.Service.Security;
+using ChatApp.Application.Service.SocketHub;
 using ChatApp.Domain.Models;
 using ChatApp.Infrastructure.Context;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -34,10 +35,13 @@ public static class Initializer
             configuration.GetSection(nameof(RabbitMqConfiguration)).Bind(a));
         services.AddSingleton<IRabbitMqService, RabbitMqService>();
         services.AddSingleton<IConsumerService, ConsumerService>();
-        services.AddTransient<IRoomService, RoomService>();
-        services.AddTransient<IMessageService, MessageService>();
+
+        services.AddScoped<IRoomService, RoomService>();
+        services.AddScoped<IMessageService, MessageService>();
         services.AddScoped<IJwtService, JwtService>();
         services.AddScoped<IUserService, UserService>();
+        services.AddScoped<IWebSocketHubService, WebSocketHubService>();
+
         services.AddHostedService<ConsumerHostedService>();
         services.Configure<JwtTokenOptions>(a => configuration.GetSection(nameof(JwtTokenOptions)).Bind(a));
         services.AddSingleton(jwtSigningKey);

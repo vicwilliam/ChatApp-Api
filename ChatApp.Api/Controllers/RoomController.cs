@@ -1,6 +1,6 @@
 using ChatApp.Api.Controllers.Base;
-using ChatApp.Api.Hubs;
 using ChatApp.Application.Dtos;
+using ChatApp.Application.Service.Hubs;
 using ChatApp.Application.Service.Interfaces;
 using ChatApp.Domain.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -13,22 +13,26 @@ namespace ChatApp.Api.Controllers;
 public class RoomController : BaseController<Room>
 {
     private readonly IRoomService _roomService;
+    private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IHubContext<WebSocketHub> _wsHubContext;
 
     public RoomController(IRoomService baseService,
         IHttpContextAccessor httpContextAncestor,
+        IHttpContextAccessor httpContextAccessor,
         IHubContext<WebSocketHub> wsHubContext)
         : base(baseService, httpContextAncestor)
     {
         _roomService = baseService;
+        _httpContextAccessor = httpContextAccessor;
         _wsHubContext = wsHubContext;
     }
 
     [HttpPost]
     public async Task<IActionResult> Create(CreateRoomDto dto)
     {
-        dto.CreatorId = Guid.Parse("01ee577b-7c6f-443b-815c-3129ce4509e6");
-        await _roomService.CreateRoom(dto);
+        var currentuser = _httpContextAccessor.HttpContext.User;
+
+        await _roomService.CreateRoom(dto, currentuser);
         await _wsHubContext.Clients.All.SendAsync("newRoom");
         return Created("/", "");
     }

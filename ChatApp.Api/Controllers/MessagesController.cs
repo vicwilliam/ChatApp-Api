@@ -1,6 +1,6 @@
 ﻿using ChatApp.Api.Controllers.Base;
-using ChatApp.Api.Hubs;
 using ChatApp.Application.Dtos;
+using ChatApp.Application.Service.Hubs;
 using ChatApp.Application.Service.Interfaces;
 using ChatApp.Domain.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -14,15 +14,13 @@ namespace ChatApp.Api.Controllers;
 public class MessagesController : Controller
 {
     private readonly IMessageService _messageService;
-    private readonly IHubContext<WebSocketHub> _wsHubContext;
     private readonly IHttpContextAccessor httpContextAccessor;
 
     public MessagesController(IMessageService baseService,
-        IHttpContextAccessor httpContextAccessor,
-        IHubContext<WebSocketHub> wsHubContext)
+        IHttpContextAccessor httpContextAccessor
+    )
     {
         _messageService = baseService;
-        _wsHubContext = wsHubContext;
         this.httpContextAccessor = httpContextAccessor;
     }
 
@@ -31,7 +29,6 @@ public class MessagesController : Controller
     {
         var currentuser = httpContextAccessor.HttpContext.User;
         await _messageService.SendMessage(dto, currentuser);
-        await _wsHubContext.Clients.All.SendAsync("newMessage", dto);
         return Ok();
     }
 

@@ -3,10 +3,13 @@ using System.Text;
 using ChatApp.Application.Dtos;
 using ChatApp.Application.RMQ;
 using ChatApp.Application.Service.Base;
+using ChatApp.Application.Service.Hubs;
 using ChatApp.Application.Service.Interfaces;
+using ChatApp.Application.Service.SocketHub;
 using ChatApp.Domain.Models;
 using ChatApp.Infrastructure.Context;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 
@@ -15,14 +18,17 @@ namespace ChatApp.Application.Service.Entities;
 public class MessageService : BaseService<Message>, IMessageService
 {
     private readonly IRabbitMqService _rabbitMqService;
+    private readonly IWebSocketHubService _hub;
     private readonly UserManager<User> _userManager;
 
     public MessageService(AppDbContext context,
         IRabbitMqService rabbitMqService,
+        IWebSocketHubService hub,
         UserManager<User> userManager) :
         base(context)
     {
         _rabbitMqService = rabbitMqService;
+        _hub = hub;
         _userManager = userManager;
     }
 
@@ -40,7 +46,7 @@ public class MessageService : BaseService<Message>, IMessageService
             RoomId = dto.RoomId,
             Content = dto.Content
         };
-
+        await _hub.SendMessage(dto.RoomId);
         await Insert(message);
     }
 
@@ -59,6 +65,7 @@ public class MessageService : BaseService<Message>, IMessageService
                 AuthorUserName = x.Author.UserName
             })
             .ToListAsync();
+
         return result;
     }
 
