@@ -9,5 +9,5 @@ public interface IUserService
 {
     Task<Guid> GetUserIdFromUsername(string username);
     Task<IdentityResult> RegisterUser(UserRegisterLoginDto dto);
-    Task<SignInResult> LoginUser(UserRegisterLoginDto dto);
+    Task<SignedUserDto> LoginUser(UserRegisterLoginDto dto);
 }

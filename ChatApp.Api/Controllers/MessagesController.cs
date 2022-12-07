@@ -11,28 +11,30 @@ namespace ChatApp.Api.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public class MessagesController : BaseController<Message>
+public class MessagesController : Controller
 {
     private readonly IMessageService _messageService;
     private readonly IHubContext<WebSocketHub> _wsHubContext;
+    private readonly IHttpContextAccessor httpContextAccessor;
 
     public MessagesController(IMessageService baseService,
         IHttpContextAccessor httpContextAccessor,
-        IHubContext<WebSocketHub> wsHubContext) : base(baseService, httpContextAccessor)
+        IHubContext<WebSocketHub> wsHubContext)
     {
         _messageService = baseService;
         _wsHubContext = wsHubContext;
+        this.httpContextAccessor = httpContextAccessor;
     }
 
     [HttpPost("send")]
     public async Task<IActionResult> SendMessage(SendMessageDto dto)
     {
-        dto.AuthorId = Guid.Parse("01ee577b-7c6f-443b-815c-3129ce4509e6");
-        await _messageService.SendMessage(dto);
+        var currentuser = httpContextAccessor.HttpContext.User;
+        await _messageService.SendMessage(dto, currentuser);
         await _wsHubContext.Clients.All.SendAsync("newMessage", dto);
-        Console.WriteLine("sent");
         return Ok();
     }
+
 
     [HttpPost("sendCommand")]
     [AllowAnonymous]

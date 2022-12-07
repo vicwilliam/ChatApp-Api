@@ -14,7 +14,7 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace ChatApp.Application.DependencyInjection;
 
-public class Initializer
+public static class Initializer
 {
     public static void Configure(IServiceCollection services, IConfiguration configuration)
     {
@@ -29,25 +29,23 @@ public class Initializer
             u.SignIn.RequireConfirmedAccount = false;
             u.SignIn.RequireConfirmedEmail = false;
             u.SignIn.RequireConfirmedPhoneNumber = false;
-        }).AddEntityFrameworkStores<AppDbContext>();
-
+        }).AddEntityFrameworkStores<AppDbContext>().AddDefaultTokenProviders();
         services.Configure<RabbitMqConfiguration>(a =>
             configuration.GetSection(nameof(RabbitMqConfiguration)).Bind(a));
         services.AddSingleton<IRabbitMqService, RabbitMqService>();
         services.AddSingleton<IConsumerService, ConsumerService>();
-        services.AddHostedService<ConsumerHostedService>();
-
         services.AddTransient<IRoomService, RoomService>();
         services.AddTransient<IMessageService, MessageService>();
         services.AddScoped<IJwtService, JwtService>();
         services.AddScoped<IUserService, UserService>();
-
+        services.AddHostedService<ConsumerHostedService>();
         services.Configure<JwtTokenOptions>(a => configuration.GetSection(nameof(JwtTokenOptions)).Bind(a));
         services.AddSingleton(jwtSigningKey);
         services.AddAuthentication(options =>
         {
             options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
             options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+            options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
         }).AddJwtBearer(options =>
         {
             options.TokenValidationParameters = new TokenValidationParameters

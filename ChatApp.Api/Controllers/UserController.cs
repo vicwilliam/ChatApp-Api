@@ -31,8 +31,6 @@ public class UserController : Controller
     public async Task<IActionResult> Authenticate(UserRegisterLoginDto dto)
     {
         var result = await service.LoginUser(dto);
-        if (result.Succeeded)
-            return Ok(result);
-        return BadRequest(result);
+        return Ok(result);
     }
 }

@@ -42,7 +42,6 @@ public class JwtService : IJwtService
             SigningCredentials = _jwtSigningKey.SigningCredentials,
         };
 
-        // TODO: Implement Refresh Tokens
         SecurityToken securityToken = _tokenHandler.CreateToken(tokenDescriptor);
         return new JwtTokenDto()
         {

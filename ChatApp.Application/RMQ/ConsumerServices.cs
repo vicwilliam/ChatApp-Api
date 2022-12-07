@@ -30,7 +30,7 @@ public class ConsumerService : IConsumerService, IDisposable
     }
 
 
-    public async Task ReadMessgaes()
+    public Task ReadMessgaes()
     {
         var consumer = new AsyncEventingBasicConsumer(_model);
         consumer.Received += async (ch, ea) =>
@@ -41,42 +41,34 @@ public class ConsumerService : IConsumerService, IDisposable
             botGuid = botGuid ?? await _userService.GetUserIdFromUsername("stocksbot");
             try
             {
-                var stockList = await StooqApi.GetQuote(requestData.Parameter);
-                if (stockList.First().High != "N/D")
+                List<QuoteApiSchema> stockList = await StooqApi.GetQuote(requestData.Parameter);
+                if (stockList.First().High == "N/D") throw new Exception();
+                var stock = stockList.FirstOrDefault();
+                var messageDto = new SendMessageDto()
                 {
-                    var stock = stockList.FirstOrDefault();
-                    var messageDto = new SendMessageDto()
-                    {
-                        Content = $"Quotes for {stock.Symbol}\n " +
-                                  $"Open:{stock.Open} \n" +
-                                  $"Close: {stock.Close}\n" +
-                                  $"High: {stock.High}\n" +
-                                  $"Low: {stock.Low}",
-                        AuthorId = (Guid)botGuid,
-                        RoomId = requestData.RoomId
-                    };
-                    await this._messageService.SendMessage(messageDto);
-                    return;
-                }
-
-                throw new Exception();
+                    Content = $"Quotes for {stock.Symbol}\n " +
+                              $"Open:{stock.Open} \n" +
+                              $"Close: {stock.Close}\n" +
+                              $"High: {stock.High}\n" +
+                              $"Low: {stock.Low}",
+                    AuthorId = (Guid)botGuid,
+                    RoomId = requestData.RoomId
+                };
+                await this._messageService.SendMessage(messageDto, null);
             }
             catch (Exception e)
             {
                 await this._messageService.SendMessage(new SendMessageDto()
                 {
-                    Content = "Failed to get stock price",
+                    Content = $"Failed to get stock for {requestData.Parameter}",
                     AuthorId = (Guid)botGuid,
                     RoomId = requestData.RoomId
-                });
+                }, null);
                 throw;
             }
-
-            await Task.CompletedTask;
-            _model.BasicAck(ea.DeliveryTag, false);
         };
-        _model.BasicConsume(_queueName, false, consumer);
-        await Task.CompletedTask;
+        _model.BasicConsume(_queueName, true, consumer);
+        return Task.CompletedTask;
     }
 
     public void Dispose()

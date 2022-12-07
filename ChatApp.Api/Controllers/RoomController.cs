@@ -38,10 +38,4 @@ public class RoomController : BaseController<Room>
     {
         return Ok(_roomService.GetAll());
     }
-
-    [HttpPost("command")]
-    public IActionResult PostCommand()
-    {
-        return null;
-    }
 }
