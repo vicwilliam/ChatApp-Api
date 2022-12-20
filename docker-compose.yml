@@ -1,0 +1,51 @@
+services:
+  api:
+    image: vicpaulini/chatapp-api:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "5000:5000"
+    restart: unless-stopped
+    command: [ "dotnet","ef","database update", "--startup-project ChatApp.Api/ChatApp.Api.csproj", "--project ./ChatApp.Infrastructure/ChatApp.Infrastructure.csproj" ]
+    environment:
+      ASPNETCORE_URLS: "http://0.0.0.0:5000"
+    depends_on:
+      - database
+      - rabbit
+    links:
+      - "database:database"
+      - "rabbit:rabbit"
+    networks:
+      - chatAppNet
+  
+  database:
+    image: postgres:latest
+    container_name: pgsql_api
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgresql123}
+      POSTGRES_DB: "chatApp-dev"
+      PGDATA: /data/postgres
+    volumes:
+      - postgres:/data/postgres
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+    networks:
+      - chatAppNet
+  
+  rabbit:
+    image: rabbitmq:3-management
+    restart: unless-stopped
+    ports:
+      - "15672:15672"
+      - "5672:5672"
+    networks:
+      - chatAppNet
+
+networks:
+  chatAppNet:
+    driver: bridge
+volumes:
+  postgres:
